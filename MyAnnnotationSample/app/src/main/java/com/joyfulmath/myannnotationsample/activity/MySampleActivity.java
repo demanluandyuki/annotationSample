@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.widget.TextView;
 
 import com.joyfulmath.myannnotationsample.R;
+import com.joyfulmath.myannnotationsample.sample.MyBackgroundTasks;
 import com.joyfulmath.myannnotationsample.utils.NotificationMgr;
 import com.joyfulmath.myannnotationsample.utils.TraceLog;
 
@@ -11,6 +12,7 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.NonConfigurationInstance;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.Click;
@@ -27,18 +29,27 @@ public class MySampleActivity extends Activity {
     @Bean
     NotificationMgr notificationMgr;
 
+    @NonConfigurationInstance
+    @Bean
+    MyBackgroundTasks task;
+
     int i = 0;
 
-    @Click
-    void mySampleButton()
-    {
+    @Click(R.id.mySampleButton)
+    void mySampleButton() {
         TraceLog.d("currentthread:" + Thread.currentThread().getId());
-        translateinBackground(textView.getText().toString()+i++);
+        translateinBackground(textView.getText().toString() + i++);
+    }
+
+    @Click(R.id.mySampleButton2)
+    void mySampleButton2()
+    {
+        TraceLog.d("mySampleButton2:" + Thread.currentThread().getId());
+        task.doSomethingBackground();
     }
 
     @Background
-    void translateinBackground(String text)
-    {
+    void translateinBackground(String text) {
         TraceLog.d("currentthread:" + Thread.currentThread().getId());
         String str = text.trim();
         showResult(str);
@@ -47,13 +58,18 @@ public class MySampleActivity extends Activity {
 
     @UiThread
     void showResult(String str) {
-        TraceLog.d("currentthread:"+Thread.currentThread().getId());
+        TraceLog.d("currentthread:" + android.os.Process.myTid());
         textView.setText(str);
     }
 
     @AfterInject
-    void updateNotification()
-    {
+    void updateNotification() {
         notificationMgr.setNotificationTitle("notify sample annotation");
     }
+
+    public void refershUi(int result)
+    {
+        TraceLog.d(String.valueOf(result));
+    }
+
 }
