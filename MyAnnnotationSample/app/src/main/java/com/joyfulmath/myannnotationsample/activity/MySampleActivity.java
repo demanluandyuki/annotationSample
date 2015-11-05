@@ -48,6 +48,19 @@ public class MySampleActivity extends Activity {
         task.doSomethingBackground();
     }
 
+    @AfterInject
+    void updateNotification() {
+        notificationMgr.setNotificationTitle("notify sample annotation");
+    }
+
+    @Click(R.id.myStartActivity)
+    void startNewActivity()
+    {
+        TraceLog.d();
+        //start new activity old code:startactivty(new intent(this,EActivitySampleActivity_.Class))
+        EActivitySampleActivity_.intent(this).start();
+    }
+
     @Background
     void translateinBackground(String text) {
         TraceLog.d("currentthread:" + Thread.currentThread().getId());
@@ -60,11 +73,6 @@ public class MySampleActivity extends Activity {
     void showResult(String str) {
         TraceLog.d("currentthread:" + android.os.Process.myTid());
         textView.setText(str);
-    }
-
-    @AfterInject
-    void updateNotification() {
-        notificationMgr.setNotificationTitle("notify sample annotation");
     }
 
     public void refershUi(int result)
